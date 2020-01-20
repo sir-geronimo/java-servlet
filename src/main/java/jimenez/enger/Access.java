@@ -47,7 +47,8 @@ public class Access extends HttpServlet {
         else {
             this._errors[0] = "Usuario o contraseña incorrecta";
             request.setAttribute("errors", this._errors);
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp")
+                    .forward(request, response);
         }
     }
 }

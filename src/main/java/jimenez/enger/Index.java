@@ -21,9 +21,11 @@ public class Index extends HttpServlet {
         }
 
         if (logged == null || (boolean) logged == false) {
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp")
+                    .forward(request, response);
         } else {
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+            request.getRequestDispatcher("index.jsp")
+                    .forward(request, response);
         }
     }
 }
