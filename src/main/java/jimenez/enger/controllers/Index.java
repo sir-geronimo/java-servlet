@@ -11,13 +11,10 @@ import java.io.IOException;
 
 @WebServlet(name = "Index", urlPatterns = "/")
 public class Index extends HttpServlet {
-  ExcelFile excelFile = new ExcelFile();
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
     if (Access.isLogged(request)) {
-      this.excelFile.Write();
-
       request
         .getRequestDispatcher("index.jsp")
         .forward(request, response);

@@ -1,6 +1,7 @@
 package jimenez.enger.helpers;
 
 import jimenez.enger.Config;
+import jimenez.enger.models.Product;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,8 +10,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Iterator;
+import java.util.List;
 
-public class ExcelFile {
+public class ExcelFile<T> {
+    public File file;
     public Workbook workbook;
     public Sheet sheet;
     public Row row;
@@ -35,23 +38,39 @@ public class ExcelFile {
             throw new Exception("Invalid file name, must be xls or xlsx");
         }
     }
-    public boolean Write() {
+    public File OpenFile() throws Exception{
+        file = new File(filepath);
+
+        if (!file.exists()) {
+            // Initiate sheets
+            workbook.createSheet("Dashboard");
+            workbook.createSheet("Products");
+            workbook.createSheet("Users");
+
+            // Close and save file
+            FileOutputStream fos = new FileOutputStream(filepath);
+            workbook.write(fos);
+            fos.close();
+            workbook.close();
+        }
+
+        return file;
+    }
+    public boolean Write(T data, int sheetNumber) {
         try {
             // Init file
             this.Init(filepath, null);
 
             // Open file
-            FileInputStream fis = new FileInputStream(new File(filepath));
+            FileInputStream fis = new FileInputStream(OpenFile());
             this.workbook = WorkbookFactory.create(fis);
+            sheet = workbook.getSheetAt(sheetNumber);
+            sheet.autoSizeColumn(0);
 
             // Insert new rows
             // TODO: Refactor
-    //        sheet = workbook.createSheet("Productos");
-            sheet = workbook.getSheetAt(0);
-            sheet.autoSizeColumn(0);
-            row = sheet.createRow(0);
-            cell = row.createCell(0);
-            cell.setCellValue("Hola mundo");
+            row.createCell(0).setCellValue("Hola mundo");
+            row.createCell(1).setCellValue("Enger");
             row.createCell(2).setCellValue("Jimenez");
 
             // Save changes
@@ -69,7 +88,7 @@ public class ExcelFile {
         }
     }
     public boolean Read() throws  Exception {
-        FileInputStream fis = new FileInputStream(new File(filepath));
+        FileInputStream fis = new FileInputStream(OpenFile());
 
         // Init file
         this.Init(filepath, fis);
