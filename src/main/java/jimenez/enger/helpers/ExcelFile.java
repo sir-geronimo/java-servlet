@@ -1,7 +1,6 @@
 package jimenez.enger.helpers;
 
 import jimenez.enger.Config;
-import jimenez.enger.models.Product;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,8 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.List;
 
 public class ExcelFile<T> {
     public File file;
@@ -48,7 +47,8 @@ public class ExcelFile<T> {
             workbook.createSheet("Users");
 
             // Close and save file
-            FileOutputStream fos = new FileOutputStream(filepath);
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
             workbook.write(fos);
             fos.close();
             workbook.close();
@@ -68,10 +68,36 @@ public class ExcelFile<T> {
             sheet.autoSizeColumn(0);
 
             // Insert new rows
-            // TODO: Refactor
-            row.createCell(0).setCellValue("Hola mundo");
-            row.createCell(1).setCellValue("Enger");
-            row.createCell(2).setCellValue("Jimenez");
+            // TODO: Refactor to write generic data
+            // row.createCell(0).setCellValue("Hola mundo");
+
+            Field[] fields = data.getClass().getFields();
+            int i = 0;
+
+            for (Field field : fields) {
+                /* TODO: Fix error:
+
+                //  java.lang.IllegalArgumentException: Can not set int field jimenez.enger.models.ProductModel.Id to java.lang.String
+                //	at sun.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:167)
+                //	at sun.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:171)
+                //	at sun.reflect.UnsafeFieldAccessorImpl.ensureObj(UnsafeFieldAccessorImpl.java:58)
+                //	at sun.reflect.UnsafeIntegerFieldAccessorImpl.getInt(UnsafeIntegerFieldAccessorImpl.java:56)
+                //	at sun.reflect.UnsafeIntegerFieldAccessorImpl.get(UnsafeIntegerFieldAccessorImpl.java:36)
+                //	at java.lang.reflect.Field.get(Field.java:393)
+                //	at jimenez.enger.helpers.ExcelFile.Write(ExcelFile.java:82)
+                //	at jimenez.enger.services.ProductDao.Create(ProductDao.java:35)
+                //	at jimenez.enger.controllers.ProductController.doPost(ProductController.java:21)
+                // Get field name
+
+                 */
+                Object fieldName = field.getName();
+
+                // Get field value
+                Object fieldValue = field.get(fieldName);
+
+                row.createCell(i).setCellValue(fieldValue.toString());
+                i++;
+            }
 
             // Save changes
             fis.close();

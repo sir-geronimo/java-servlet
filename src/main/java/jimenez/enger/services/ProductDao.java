@@ -1,19 +1,21 @@
 package jimenez.enger.services;
 
 import jimenez.enger.helpers.ExcelFile;
-import jimenez.enger.interfaces.CrudAction;
-import jimenez.enger.models.Product;
+import jimenez.enger.interfaces.GenericDao;
+import jimenez.enger.models.ProductModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDao implements CrudAction<Product> {
-    Product product = null;
-    ExcelFile excel = new ExcelFile();
+public class ProductDao implements GenericDao<ProductModel> {
+    int sheetNumber = 0;
+    ProductModel productModel = null;
+    ExcelFile<ProductModel> excel = new ExcelFile<>();
 
     @Override
-    public Product Get(int id) {
+    public ProductModel Get(int id) {
         try {
-            return product;
+            return productModel;
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -21,14 +23,16 @@ public class ProductDao implements CrudAction<Product> {
     }
 
     @Override
-    public List<Product> GetAll() {
-        return null;
+    public List<ProductModel> GetAll() {
+        List<ProductModel> productModels = new ArrayList<>();
+
+        return productModels;
     }
 
     @Override
-    public Product Create(Product data) {
+    public ProductModel Create(ProductModel data) {
         try {
-            excel.Write(data, 1);
+            excel.Write(data, sheetNumber);
             return Get(1);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -37,7 +41,7 @@ public class ProductDao implements CrudAction<Product> {
     }
 
     @Override
-    public Product Update(int id, Product data) {
+    public ProductModel Update(int id, ProductModel data) {
         return null;
     }
 

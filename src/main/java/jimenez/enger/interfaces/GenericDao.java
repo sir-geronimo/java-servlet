@@ -2,7 +2,7 @@ package jimenez.enger.interfaces;
 
 import java.util.List;
 
-public interface CrudAction<T> {
+public interface GenericDao<T> {
     T Get(int id);
     List<T> GetAll();
     T Create(T data);
