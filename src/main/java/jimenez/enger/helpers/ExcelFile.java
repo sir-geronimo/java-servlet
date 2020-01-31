@@ -8,16 +8,16 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
 
-public class ExcelFile<T> {
+public class ExcelFile {
     public File file;
     public Workbook workbook;
     public Sheet sheet;
     public Row row;
-    public Cell cell;
     public String filepath = Config.FILE_PATH + "xcrud_db.xlsx";
+    FileInputStream fis;
 
     public void Init(String filename, FileInputStream file) throws Exception{
         // Verify file extension
@@ -37,7 +37,10 @@ public class ExcelFile<T> {
             throw new Exception("Invalid file name, must be xls or xlsx");
         }
     }
-    public File OpenFile() throws Exception{
+    public void Open() throws Exception {
+        // Init file
+        Init(filepath, null);
+
         file = new File(filepath);
 
         if (!file.exists()) {
@@ -54,76 +57,29 @@ public class ExcelFile<T> {
             workbook.close();
         }
 
-        return file;
+        // Open file
+        fis = new FileInputStream(file);
+        workbook = WorkbookFactory.create(fis);
     }
-    public boolean Write(T data, int sheetNumber) {
+    public void Write(String data, int sheetNumber, int index) {
         try {
-            // Init file
-            this.Init(filepath, null);
-
-            // Open file
-            FileInputStream fis = new FileInputStream(OpenFile());
-            this.workbook = WorkbookFactory.create(fis);
             sheet = workbook.getSheetAt(sheetNumber);
-            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(index);
+            int rowNum = sheet.getLastRowNum() + 1;
+            row = sheet.createRow(rowNum);
 
             // Insert new rows
             // TODO: Refactor to write generic data
-            // row.createCell(0).setCellValue("Hola mundo");
-
-            Field[] fields = data.getClass().getFields();
-            int i = 0;
-
-            for (Field field : fields) {
-                /* TODO: Fix error:
-
-                //  java.lang.IllegalArgumentException: Can not set int field jimenez.enger.models.ProductModel.Id to java.lang.String
-                //	at sun.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:167)
-                //	at sun.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:171)
-                //	at sun.reflect.UnsafeFieldAccessorImpl.ensureObj(UnsafeFieldAccessorImpl.java:58)
-                //	at sun.reflect.UnsafeIntegerFieldAccessorImpl.getInt(UnsafeIntegerFieldAccessorImpl.java:56)
-                //	at sun.reflect.UnsafeIntegerFieldAccessorImpl.get(UnsafeIntegerFieldAccessorImpl.java:36)
-                //	at java.lang.reflect.Field.get(Field.java:393)
-                //	at jimenez.enger.helpers.ExcelFile.Write(ExcelFile.java:82)
-                //	at jimenez.enger.services.ProductDao.Create(ProductDao.java:35)
-                //	at jimenez.enger.controllers.ProductController.doPost(ProductController.java:21)
-                // Get field name
-
-                 */
-                Object fieldName = field.getName();
-
-                // Get field value
-                Object fieldValue = field.get(fieldName);
-
-                row.createCell(i).setCellValue(fieldValue.toString());
-                i++;
-            }
-
-            // Save changes
-            fis.close();
-
-            // Save file
-            FileOutputStream fos = new FileOutputStream(filepath);
-            workbook.write(fos);
-            workbook.close();
-            fos.close();
-            return true;
+             row.createCell(index).setCellValue(data);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
-    public boolean Read() throws  Exception {
-        FileInputStream fis = new FileInputStream(OpenFile());
-
-        // Init file
-        this.Init(filepath, fis);
-
-//        int numberOfSheets = workbook.getNumberOfSheets();
-
-//        for (int i = 0; i < numberOfSheets; i++) {
-//            sheet = workbook.getSheetAt(i);
-            sheet = workbook.getSheetAt(0);
+    public boolean Read(int sheetNumber) {
+        try {
+            // Init file
+            this.Init(filepath, fis);
+            sheet = workbook.getSheetAt(sheetNumber);
 
             Iterator<Row> rowIterator = sheet.rowIterator();
             while (rowIterator.hasNext()) {
@@ -138,9 +94,23 @@ public class ExcelFile<T> {
 //                    cell = cellIterator.next();
 //                }
             }
-//        }
 
+            fis.close();
+            return true;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    public void Save() throws Exception {
+        // Save changes
         fis.close();
-        return true;
+
+        // Save file
+        FileOutputStream fos = new FileOutputStream(filepath);
+        workbook.write(fos);
+        workbook.close();
+        fos.close();
     }
 }

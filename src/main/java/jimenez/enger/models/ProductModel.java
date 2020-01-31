@@ -3,7 +3,7 @@ package jimenez.enger.models;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ProductModel {
+public class ProductModel extends BaseModel {
     public int Id;
     public String Name;
     public String Description;
