@@ -84,8 +84,14 @@ public class ProductController extends HttpServlet {
   private void getBody(HttpServletRequest request) {
     productModel.Name = request.getParameter("Name");
     productModel.Description = request.getParameter("Description");
-    productModel.Price = Double.parseDouble(request.getParameter("Price"));
-    productModel.Quantity = Integer.parseInt(request.getParameter("Quantity"));
+
+    if (!request.getParameter("Price").equals("")) {
+      productModel.Price = Double.parseDouble(request.getParameter("Price"));
+    }
+
+    if (!request.getParameter("Quantity").equals("")) {
+      productModel.Quantity = Integer.parseInt(request.getParameter("Quantity"));
+    }
     productModel.Supplier = request.getParameter("Supplier");
     productModel.Status = request.getParameter("Status");
   }

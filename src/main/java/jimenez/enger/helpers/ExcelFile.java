@@ -99,17 +99,18 @@ public class ExcelFile {
         style.setAlignment(HorizontalAlignment.CENTER);
 
         // Set colors
-        style.setFillBackgroundColor(IndexedColors.BLUE_GREY.getIndex());
+        style.setFillBackgroundColor(IndexedColors.RED.getIndex());
         style.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         // Set borders style
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
         style.setBorderBottom(BorderStyle.MEDIUM);
-        style.setBorderLeft(BorderStyle.MEDIUM);
-        style.setBorderRight(BorderStyle.MEDIUM);
-
-        // Set borders colors
         style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBorderLeft(BorderStyle.MEDIUM);
         style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBorderRight(BorderStyle.MEDIUM);
         style.setRightBorderColor(IndexedColors.BLACK.getIndex());
 
         // Set columns title
