@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet(name = "Access",urlPatterns = "/Access")
-public class Access extends HttpServlet {
+public class AccessController extends HttpServlet {
   private String[] _errors = { "" };
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -11,5 +11,6 @@
 </c:if>
 
 <h1 class="h1">Your mum</h1>
+<a href="Product">See Products</a>
 </body>
 </html>

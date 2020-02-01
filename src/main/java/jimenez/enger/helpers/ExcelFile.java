@@ -8,8 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Iterator;
-import java.util.List;
 
 public class ExcelFile {
     public File file;
@@ -37,7 +35,7 @@ public class ExcelFile {
             throw new Exception("Invalid file name, must be xls or xlsx");
         }
     }
-    public void Open() throws Exception {
+    public void Open(int sheetNumber) throws Exception {
         // Init file
         Init(filepath, null);
 
@@ -45,9 +43,12 @@ public class ExcelFile {
 
         if (!file.exists()) {
             // Initiate sheets
-            workbook.createSheet("Dashboard");
             workbook.createSheet("Products");
-            workbook.createSheet("Users");
+            workbook.createSheet("Dashboard");
+//            workbook.createSheet("Users");
+
+            // set sheet styles
+            setHeaders();
 
             // Close and save file
             file.createNewFile();
@@ -60,50 +61,11 @@ public class ExcelFile {
         // Open file
         fis = new FileInputStream(file);
         workbook = WorkbookFactory.create(fis);
+
+        // Open sheet
+        sheet = workbook.getSheetAt(sheetNumber);
     }
-    public void Write(String data, int sheetNumber, int index) {
-        try {
-            sheet = workbook.getSheetAt(sheetNumber);
-            sheet.autoSizeColumn(index);
-            int rowNum = sheet.getLastRowNum() + 1;
-            row = sheet.createRow(rowNum);
-
-            // Insert new rows
-            // TODO: Refactor to write generic data
-             row.createCell(index).setCellValue(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public boolean Read(int sheetNumber) {
-        try {
-            // Init file
-            this.Init(filepath, fis);
-            sheet = workbook.getSheetAt(sheetNumber);
-
-            Iterator<Row> rowIterator = sheet.rowIterator();
-            while (rowIterator.hasNext()) {
-                row = rowIterator.next();
-                int index = row.getRowNum() + 1;
-
-                String name = sheet.getRow(index).getCell(0).toString();
-                String price = sheet.getRow(index).getCell(1).toString();
-
-//                Iterator<Cell> cellIterator = row.cellIterator();
-//                while (cellIterator.hasNext()) {
-//                    cell = cellIterator.next();
-//                }
-            }
-
-            fis.close();
-            return true;
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
-    }
-    public void Save() throws Exception {
+    public void Close() throws Exception {
         // Save changes
         fis.close();
 
@@ -112,5 +74,56 @@ public class ExcelFile {
         workbook.write(fos);
         workbook.close();
         fos.close();
+    }
+    private void setHeaders() {
+        sheet = workbook.getSheetAt(0);
+        row = sheet.createRow(0);
+
+        // Set columns width
+        sheet.setColumnWidth(0, 10 * 256);
+        sheet.setColumnWidth(1, 15 * 256);
+        sheet.setColumnWidth(2, 28 * 256);
+        sheet.setColumnWidth(3, 14 * 256);
+        sheet.setColumnWidth(4, 10 * 256);
+        sheet.setColumnWidth(5, 21 * 256);
+        sheet.setColumnWidth(6, 21 * 256);
+        sheet.setColumnWidth(7, 11 * 256);
+
+        // Set columns style
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);
+
+        // Set alignment
+        style.setAlignment(HorizontalAlignment.CENTER);
+
+        // Set colors
+        style.setFillBackgroundColor(IndexedColors.BLUE_GREY.getIndex());
+        style.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+
+        // Set borders style
+        style.setBorderBottom(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+
+        // Set borders colors
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
+        // Set columns title
+        row.createCell(0).setCellValue("Id");
+        row.createCell(1).setCellValue("Name");
+        row.createCell(2).setCellValue("Description");
+        row.createCell(3).setCellValue("Price");
+        row.createCell(4).setCellValue("Quantity");
+        row.createCell(5).setCellValue("Supplier");
+        row.createCell(6).setCellValue("Date of creation");
+        row.createCell(7).setCellValue("Status");
+
+        for (Cell cell : row) {
+            cell.setCellStyle(style);
+        }
     }
 }

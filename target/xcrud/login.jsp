@@ -1,4 +1,3 @@
-<%@ page import="jimenez.enger.controllers.Index" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false"%>
 <!DOCTYPE html>
@@ -23,7 +22,7 @@
             <div class="field">
                 <label class="label">Username</label>
                 <div class="control has-icons-left">
-                    <input name="username" class="input" type="text">
+                    <input name="username" class="input" type="text" autofocus>
                     <span class="icon is-small is-left">
                         <i class="fas fa-user"></i>
                       </span>
